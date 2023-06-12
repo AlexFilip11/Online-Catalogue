@@ -18,7 +18,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpGet]
         public IEnumerable<SubjectsToGetDto> GetAllSubjects()
         {
-            var allSubjects = DataAccessLayerSeed.Instance.GetAllSubjects();
+            var allSubjects = DataAccessLayerSingleton.Instance.GetAllSubjects();
             return allSubjects.Select(s => s.ToDto()).ToList();
         }
         /// <summary>
@@ -27,7 +27,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpPost]
         public SubjectsToGetDto AddASubject([FromBody] SubjectToCreateDto subjectToCreate)
         {
-            var subject = DataAccessLayerSeed.Instance.AddSubject(subjectToCreate.ToEntity()).ToDto();
+            var subject = DataAccessLayerSingleton.Instance.AddSubject(subjectToCreate.ToEntity()).ToDto();
             return subject;
         }
         /// <summary>
@@ -44,7 +44,7 @@ namespace FinalProjectCatalogue.Controllers
             }
             try
             {
-                DataAccessLayerSeed.Instance.DeleteSubject(id);
+                DataAccessLayerSingleton.Instance.DeleteSubject(id);
             }
             catch (InvalidIdException ex)
             {

@@ -18,7 +18,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpPost]
         public IActionResult AddNota([FromBody] GradeToAddDto mark)
         {
-            DataAccessLayerSeed.Instance.GradeStudent(mark.Value, mark.StudentId, mark.subjectId);
+            DataAccessLayerSingleton.Instance.GradeStudent(mark.Value, mark.StudentId, mark.subjectId);
             return Ok();
         }
         /// <summary>
@@ -27,7 +27,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpGet]
         public IEnumerable<MarksToGetDto> GetAllMarksForAStudent([Range(1, int.MaxValue)] int id)
         {
-            var allMarks = DataAccessLayerSeed.Instance.GetAllMarksForAStudent(id);
+            var allMarks = DataAccessLayerSingleton.Instance.GetAllMarksForAStudent(id);
             return allMarks.Select(s => s.ToDto()).ToList();
         }
         

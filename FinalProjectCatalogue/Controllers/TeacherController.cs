@@ -20,7 +20,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpPost]
         public TeacherToGetDto CreateATeacher([FromBody] TeacherToCreateDto teacherToCreate)
         {
-            var teacher = DataAccessLayerSeed.Instance.AddTeacher(teacherToCreate.ToEntity()).ToDto();
+            var teacher = DataAccessLayerSingleton.Instance.AddTeacher(teacherToCreate.ToEntity()).ToDto();
             return teacher;
         }
         /// <summary>
@@ -34,7 +34,7 @@ namespace FinalProjectCatalogue.Controllers
         public IActionResult UpdateOrCreateTeacherAddress([FromRoute] int id, [FromBody] AddressToUpdateDto addressToUpdate)
         {
 
-            if (DataAccessLayerSeed.Instance.UpdateOrCreateTeacherAddress(id, addressToUpdate.ToEntity()))
+            if (DataAccessLayerSingleton.Instance.UpdateOrCreateTeacherAddress(id, addressToUpdate.ToEntity()))
             {
                 return Created("succeess", null);
             }
@@ -46,7 +46,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpGet]
         public IEnumerable<TeacherToGetDto> GetAllTeachers()
         {
-            var allTeachers = DataAccessLayerSeed.Instance.GetAllTeacher();
+            var allTeachers = DataAccessLayerSingleton.Instance.GetAllTeacher();
             return allTeachers.Select(s => s.ToDto()).ToList();
         }
 
@@ -59,7 +59,7 @@ namespace FinalProjectCatalogue.Controllers
         public TeacherToGetDto PromoteTeacher([Range(1, int.MaxValue)]int id, [FromBody] TeacherToPromoteDto teacherToUpdate)
         {
 
-            var teacher =DataAccessLayerSeed.Instance.PromoteTeacher(id, teacherToUpdate.ToEntity()).ToDto();
+            var teacher =DataAccessLayerSingleton.Instance.PromoteTeacher(id, teacherToUpdate.ToEntity()).ToDto();
             return teacher; 
         }
 
@@ -77,7 +77,7 @@ namespace FinalProjectCatalogue.Controllers
             }
             try
             {
-                DataAccessLayerSeed.Instance.DeleteTeacher(id);
+                DataAccessLayerSingleton.Instance.DeleteTeacher(id);
             }
             catch (InvalidIdException ex)
             {

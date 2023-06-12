@@ -20,7 +20,7 @@ namespace FinalProjectCatalogue.Controllers
         /// </summary>
         [HttpPost("seed")]
         public void Seed() =>
-            DataAccessLayerSeed.Instance.Seed();
+            DataAccessLayerSingleton.Instance.Seed();
 
         /// <summary>
         /// Shows all students from the database
@@ -28,7 +28,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpGet]
         public IEnumerable<StudentToGetDto> GetAllStudents()
         {
-            var allStudents = DataAccessLayerSeed.Instance.GetAllStudents();
+            var allStudents = DataAccessLayerSingleton.Instance.GetAllStudents();
             return allStudents.Select(s => s.ToDto()).ToList();
         }
 
@@ -44,7 +44,7 @@ namespace FinalProjectCatalogue.Controllers
 
         public ActionResult<StudentToGetDto> GetStudentById([Range(1, int.MaxValue)] int id)
         {
-            var student = DataAccessLayerSeed.Instance.GetStudentByStudentId(id);
+            var student = DataAccessLayerSingleton.Instance.GetStudentByStudentId(id);
             return student.ToDto();
         }
 
@@ -56,7 +56,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpPost]
         public StudentToGetDto CreateAStudent([FromBody] StudentToCreateDto studentToCreate)
         {
-            var student = DataAccessLayerSeed.Instance.CreateStudent(studentToCreate.ToEntity()).ToDto();
+            var student = DataAccessLayerSingleton.Instance.CreateStudent(studentToCreate.ToEntity()).ToDto();
             return student;
         }
 
@@ -68,7 +68,7 @@ namespace FinalProjectCatalogue.Controllers
         [HttpPatch]
         public StudentToGetDto UpdateStudent([FromBody] StudentToUpdateDto studentToUpdate)
         {
-            var student = DataAccessLayerSeed.Instance.UpdateStudent(studentToUpdate.ToEntity()).ToDto();
+            var student = DataAccessLayerSingleton.Instance.UpdateStudent(studentToUpdate.ToEntity()).ToDto();
             return student;
         }
 
@@ -86,7 +86,7 @@ namespace FinalProjectCatalogue.Controllers
             }
             try
             {
-                DataAccessLayerSeed.Instance.DeleteStudent(id);
+                DataAccessLayerSingleton.Instance.DeleteStudent(id);
             }
             catch (InvalidIdException ex)
             {
@@ -106,7 +106,7 @@ namespace FinalProjectCatalogue.Controllers
         public IActionResult UpdateStudentAddress([FromRoute] int id, [FromBody] AddressToUpdateDto addressToUpdate)
         {
 
-            if (DataAccessLayerSeed.Instance.UpdateOrCreateStudentAddress(id, addressToUpdate.ToEntity()))
+            if (DataAccessLayerSingleton.Instance.UpdateOrCreateStudentAddress(id, addressToUpdate.ToEntity()))
             {
                 return Created("succeess", null);
             }

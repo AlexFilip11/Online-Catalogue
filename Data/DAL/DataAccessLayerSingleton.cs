@@ -5,21 +5,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectCatalogue.Data.DAL
 {
-    public class DataAccessLayerSeed
+    public class DataAccessLayerSingleton
     {
         #region singleton
-        private DataAccessLayerSeed() 
+        private DataAccessLayerSingleton() 
         {
 
         }
-        private static DataAccessLayerSeed instance;
-        public static DataAccessLayerSeed Instance 
+        private static DataAccessLayerSingleton instance;
+        public static DataAccessLayerSingleton Instance 
         { 
             get 
             {
                 if(instance == null)
                 {
-                    instance = new DataAccessLayerSeed();
+                    instance = new DataAccessLayerSingleton();
                 }
                 return instance;
             } 
