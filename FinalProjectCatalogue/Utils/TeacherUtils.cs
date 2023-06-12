@@ -1,5 +1,6 @@
 ﻿using FinalProjectCatalogue.Data.Models;
 using FinalProjectCatalogue.Dtos;
+using System.Runtime.CompilerServices;
 
 namespace FinalProjectCatalogue.Utils
 {
@@ -28,7 +29,7 @@ namespace FinalProjectCatalogue.Utils
                 Rank = teacher.rank,
             };
         }
-        public static Teacher ToEntity(this TeacherToUpdateDto teacher)
+        public static Teacher ToEntity(this TeacherToPromoteDto teacher)
         {
             if(teacher == null)
             {
@@ -40,5 +41,6 @@ namespace FinalProjectCatalogue.Utils
                 Rank= teacher.rank,
             };
         }
+        
     }
 }

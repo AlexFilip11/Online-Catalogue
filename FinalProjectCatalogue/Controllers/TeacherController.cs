@@ -1,4 +1,5 @@
-﻿using FinalProjectCatalogue.Data.DAL;
+﻿using Data.Exceptions;
+using FinalProjectCatalogue.Data.DAL;
 using FinalProjectCatalogue.Dtos;
 using FinalProjectCatalogue.Utils;
 using Microsoft.AspNetCore.Http;
@@ -55,12 +56,36 @@ namespace FinalProjectCatalogue.Controllers
         /// <param name="teacherToUpdate"></param>
         /// <returns></returns>
         [HttpPatch]
-        public TeacherToGetDto PromoteTeacher([Range(1, int.MaxValue)]int id, [FromBody] TeacherToUpdateDto teacherToUpdate)
+        public TeacherToGetDto PromoteTeacher([Range(1, int.MaxValue)]int id, [FromBody] TeacherToPromoteDto teacherToUpdate)
         {
 
             var teacher =DataAccessLayerSeed.Instance.PromoteTeacher(id, teacherToUpdate.ToEntity()).ToDto();
             return teacher; 
-          
         }
+
+        /// <summary>
+        /// Delete a teacher by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public IActionResult DeleteTeacher(int id)
+        {
+            if (id == 0)
+            {
+                return BadRequest("id cannot be 0");
+            }
+            try
+            {
+                DataAccessLayerSeed.Instance.DeleteTeacher(id);
+            }
+            catch (InvalidIdException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            return Ok();
+        }
+       
+
     }
 }

@@ -12,7 +12,7 @@ namespace FinalProjectCatalogue.Utils
                 return null;
             }
 
-            return new MarksToGetDto { value=marks.Value, DataAndTime= marks.DataAndTime, subject = marks.Subject };
+            return new MarksToGetDto {studentId=marks.StudentId, value=marks.Value, DataAndTime= marks.DataAndTime, subjectId =marks.SubjectId };
         }
         public static Mark ToEntity(this MarksToGetDto mark)
         {
@@ -21,7 +21,7 @@ namespace FinalProjectCatalogue.Utils
                 StudentId=mark.studentId,
                 Value=mark.value,
                 DataAndTime=mark.DataAndTime,
-                Subject=mark.subject
+                SubjectId=mark.subjectId,
             };
         }
     }

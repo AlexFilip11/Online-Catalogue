@@ -5,9 +5,9 @@ namespace FinalProjectCatalogue.Dtos
 {
     public class MarksToGetDto
     {
-        public int studentId { get; set; }
+        public int? studentId { get; set; }
         public int value { get; set; }
         public DateTime DataAndTime { get; set; }
-        public Subject subject { get; set; }
+        public int? subjectId { get; set; }
     }
 }

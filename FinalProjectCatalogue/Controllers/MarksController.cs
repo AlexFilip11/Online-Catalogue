@@ -1,5 +1,6 @@
 ﻿using FinalProjectCatalogue.Data.DAL;
 using FinalProjectCatalogue.Dtos;
+using FinalProjectCatalogue.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
@@ -20,24 +21,29 @@ namespace FinalProjectCatalogue.Controllers
             DataAccessLayerSeed.Instance.GradeStudent(mark.Value, mark.StudentId, mark.subjectId);
             return Ok();
         }
+        /// <summary>
+        /// Get all marks for a student
+        /// </summary>
+        [HttpGet]
+        public IEnumerable<MarksToGetDto> GetAllMarksForAStudent([Range(1, int.MaxValue)] int id)
+        {
+            var allMarks = DataAccessLayerSeed.Instance.GetAllMarksForAStudent(id);
+            return allMarks.Select(s => s.ToDto()).ToList();
+        }
+        
+
         /*
         /// <summary>
-        /// Get all grades
+        /// Get all marks for a subject
         /// </summary>
-        [HttpGet("all-marks/{studentId}")]
-        public ActionResult<MarksToGetDto> GetAllMarksForAStudent([Range(1, int.MaxValue)] int studentId)
+        [HttpGet]
+
+        public IEnumerable<MarksToGetDto> GetAllMarksForASubject([Range(0, int.MaxValue)] int id)
         {
-            var marks = DataAccessLayerSeed.Instance.GetAllMarksForAStudent(studentId);
-            return marks.;
-            
+            var allMarks = DataAccessLayerSeed.Instance.GetAllMarksForASubject(id);
+            return allMarks.Select(s=>s.ToDto()).ToList();
         }
-
-
-        public IEnumerable<MarksToGetDto> GetGrades([Range(1, int.MaxValue)] int studentId)
-        {
-            var allGrades = DataAccessLayerSeed.Instance.GetAllMarksForAStudent(studentId);
-            return allGrades.Select(s=>s)
-        }*/
+        */
     }
 }
 

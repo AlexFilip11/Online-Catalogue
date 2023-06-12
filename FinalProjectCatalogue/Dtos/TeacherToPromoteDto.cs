@@ -2,7 +2,7 @@
 
 namespace FinalProjectCatalogue.Dtos
 {
-    public class TeacherToUpdateDto
+    public class TeacherToPromoteDto
     {
         public Rank rank { get; set; }
     }

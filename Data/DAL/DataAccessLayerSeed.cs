@@ -134,7 +134,7 @@ namespace FinalProjectCatalogue.Data.DAL
         public void DeleteStudent(int studentId)
         {
             using var ctx = new CatalogueDbContext();
-            var student = ctx.Students.Single(s => s.Id == studentId);
+            var student = ctx.Students.Include(s=>s.Address).Include(s=>s.Marks).Single(s => s.Id == studentId);
             if (student.Address != null)
             {
                 ctx.Addresses.Remove(student.Address);
@@ -181,19 +181,10 @@ namespace FinalProjectCatalogue.Data.DAL
             using var ctx = new CatalogueDbContext();
             return ctx.Subjects.ToList();
         }
-        /*public List<Subject> GetAllSubjectsOfASpecificStudent(int studentId)
-        {
-            using var ctx = new CatalogueDbContext();
-            if (!ctx.Students.Any(s => s.Id == studentId))
-            {
-                throw new InvalidIdException($"invalid student id {studentId}");
-            }
-            return ctx.Subjects.Where(s => s.StudentId == studentId).Distinct().ToList();
-        }*/
         public void DeleteSubject(int subjectId)
         {
             using var ctx = new CatalogueDbContext();
-            var subject = ctx.Subjects.Single(s => s.Id == subjectId);
+            var subject = ctx.Subjects.Include(s => s.Marks).Single(s => s.Id == subjectId);
             if (subject.Marks != null)
             {
                 ctx.Marks.RemoveRange(subject.Marks);
@@ -217,37 +208,33 @@ namespace FinalProjectCatalogue.Data.DAL
             ctx.Marks.Add(new Mark { Value = gradeValue, SubjectId = subjectId, StudentId = studentId, DataAndTime = DateTime.Now });
             ctx.SaveChanges();
         }
-        public List<bool> GetAllMarksForAStudent(int studentId)
+        public IEnumerable<Mark> GetAllMarksForAStudent(int studentId)
         {
             using var ctx = new CatalogueDbContext();
             if (!ctx.Students.Any(s => s.Id == studentId))
             {
                 throw new InvalidIdException($"invalid student id {studentId}");
             }
-            if (!ctx.Marks.Any(m => m.StudentId == studentId))
+            var marks = ctx.Marks.Where(m => m.StudentId == studentId).ToList();
+            if (marks.Count == 0)
             {
-                throw new InvalidIdException($"invalid no marks for student id {studentId}");
+                throw new InvalidIdException($"no marks for student id {studentId}");
             }
-            return ctx.Marks.Select(m => m.StudentId == studentId).ToList();
-
-
+            return marks;
         }
-        public List<bool> GetAllMarksForASubject(int studentId, int subjectId)
+        public IEnumerable<Mark> GetAllMarksForASubject(int subjectId)
         {
             using var ctx = new CatalogueDbContext();
-            if (ctx.Students.Any(s => s.Id != studentId))
-            {
-                throw new InvalidIdException($"invalid student id {studentId}");
-            }
-            if (ctx.Subjects.Any(s => s.Id != subjectId))
+            if (!ctx.Subjects.Any(s => s.Id == subjectId))
             {
                 throw new InvalidIdException($"invalid subject id {subjectId}");
             }
-            if (!ctx.Marks.Any(m => m.StudentId == studentId))
+            var marks = ctx.Marks.Where(m=>m.SubjectId == subjectId).ToList();
+            if (marks.Count == 0)
             {
-                throw new InvalidIdException($"invalid no marks for student id {studentId}");
+                throw new InvalidIdException($"no marks for subject id {subjectId}");
             }
-            return ctx.Marks.Where(s => s.SubjectId == subjectId).Select(m => m.StudentId == studentId).ToList();
+            return marks;
         }
         public List<string> GetAverageGradeForAStudent(int studentId)
         {
@@ -298,9 +285,19 @@ namespace FinalProjectCatalogue.Data.DAL
         public void DeleteTeacher(int teacherId)
         {
             using var ctx = new CatalogueDbContext();
-            var teacher = ctx.Teachers.Single(t => t.Id == teacherId);
-            ctx.Teachers.Remove(teacher);
-            ctx.SaveChanges();
+            var addresses = ctx.Addresses.Where(a => a.TeacherId == teacherId);
+            ctx.Addresses.RemoveRange(addresses);
+            var teacherMark = ctx.Teachers.Include(t=>t.Marks).SingleOrDefault(m=>m.Id==teacherId);
+            if (teacherMark != null)
+            {
+                foreach (var mark in teacherMark.Marks )
+                {
+                    mark.TeacherId = null;
+                }
+
+                ctx.Teachers.Remove(teacherMark);
+                ctx.SaveChanges();
+            }
         }
         public bool UpdateOrCreateTeacherAddress(int teacherId, Address newAddress)
         {
@@ -322,7 +319,7 @@ namespace FinalProjectCatalogue.Data.DAL
             ctx.SaveChanges();
             return created;
         }
-        public void AllocateSubjectToTeacher(int teacherId, int subjectId)
+        public bool AllocateSubjectToTeacher(int teacherId, int subjectId)
         {
             using var ctx = new CatalogueDbContext();
             if (ctx.Teachers.Where(t => t.Id == teacherId).Where(s => s.Id == subjectId).Any())
@@ -332,6 +329,7 @@ namespace FinalProjectCatalogue.Data.DAL
             var teacher = ctx.Teachers.Include(s => s.Subjects).Single(t => t.Id == teacherId);
             teacher.Subjects = new List<Subject>(subjectId);
             ctx.SaveChanges();
+            return true;
         }
         public Teacher PromoteTeacher(int teacherId,Teacher teacherToPromote)
         {
@@ -341,16 +339,21 @@ namespace FinalProjectCatalogue.Data.DAL
             ctx.SaveChanges();
             return teacher;
         }
-        public List<string> GetAllGradesOfferedByATeacher(int teacherId)
+        public IEnumerable<Mark> GetAllGradesOfferedByATeacher(int teacherId)
         {
             using var ctx = new CatalogueDbContext();
-            List<string> teachersGrades = new List<string>();
-            foreach (var mark in ctx.Marks.Where(m => m.TeacherId == teacherId))
+           if(!ctx.Teachers.Any(t=>t.Id == teacherId))
             {
-                teachersGrades.Add($"{mark.Value} +{mark.DataAndTime} +{mark.StudentId}/n");
+                throw new InvalidIdException($"invalid teacher id {teacherId}");
             }
-            return teachersGrades;
+            var marks = ctx.Marks.Where(m => m.TeacherId == teacherId).ToList();
+            if (marks.Count == 0)
+            {
+                throw new InvalidIdException($"no marks foffered by teacher id {teacherId}");
+            }
+            return marks;
         }
         #endregion
+
     }
 }
